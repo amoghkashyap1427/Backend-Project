@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../lib/api';
 import { mockUser } from '../lib/mockData';
 
@@ -40,6 +40,11 @@ export default function useItems(endpoint, mockItems = []) {
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
 
+  const itemsRef = useRef(items);
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
   useEffect(() => {
     // In mock mode, data is initialized from props/mockItems in memory. Skip network calls.
     if (USE_MOCK) {
@@ -73,6 +78,7 @@ export default function useItems(endpoint, mockItems = []) {
   }, [endpoint, reloadKey]);
 
   const reload = useCallback(() => {
+    if (USE_MOCK) return;
     setLoading(true);
     setError('');
     setReloadKey((prev) => prev + 1);
@@ -113,22 +119,18 @@ export default function useItems(endpoint, mockItems = []) {
       const payload = sanitizeData(data);
 
       if (USE_MOCK) {
-        let updatedItem = null;
-        setItems((prev) =>
-          prev.map((item) => {
-            if (item._id === id) {
-              updatedItem = {
-                ...item,
-                ...data,
-                ...payload,
-                updatedAt: new Date().toISOString(),
-              };
-              return updatedItem;
-            }
-            return item;
-          })
-        );
-        return updatedItem;
+        const existing = itemsRef.current.find((item) => item._id === id);
+        if (!existing) {
+          throw new Error('Item not found');
+        }
+        const merged = {
+          ...existing,
+          ...data,
+          ...payload,
+          updatedAt: new Date().toISOString(),
+        };
+        setItems((prev) => prev.map((i) => (i._id === id ? merged : i)));
+        return merged;
       }
 
       const res = await api.patch(`${endpoint}/${id}`, payload);
