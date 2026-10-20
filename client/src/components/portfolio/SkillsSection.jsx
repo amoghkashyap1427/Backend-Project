@@ -13,7 +13,7 @@ const proficiencyStyles = {
 
 export default function SkillsSection({ items = [] }) {
   const publicItems = Array.isArray(items)
-    ? items.filter((item) => item?.isPublic !== false)
+    ? items.filter((item) => item?.isPublic === true)
     : [];
 
   if (publicItems.length === 0) {

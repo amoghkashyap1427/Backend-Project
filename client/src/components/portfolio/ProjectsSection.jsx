@@ -3,7 +3,7 @@ import { isHttpUrl } from '../../utils/format';
 
 export default function ProjectsSection({ items = [] }) {
   const publicItems = Array.isArray(items)
-    ? items.filter((item) => item?.isPublic !== false)
+    ? items.filter((item) => item?.isPublic === true)
     : [];
 
   if (publicItems.length === 0) {

@@ -3,7 +3,7 @@ import { isHttpUrl, formatDate } from '../../utils/format';
 
 export default function CertificationsSection({ items = [] }) {
   const publicItems = Array.isArray(items)
-    ? items.filter((item) => item?.isPublic !== false)
+    ? items.filter((item) => item?.isPublic === true)
     : [];
 
   if (publicItems.length === 0) {
