@@ -4,22 +4,21 @@ import { mockUser } from '../lib/mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // Start with no user and loading set to true until initial check completes
+  // Start with no user; in mock mode loading is false initially, otherwise true until /auth/me finishes
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!USE_MOCK);
 
   useEffect(() => {
-    let ignore = false;
-
-    // In mock mode, skip network verification and complete loading immediately
+    // In mock mode, skip network verification without invoking setState in effect
     if (USE_MOCK) {
-      setUser(null);
-      setLoading(false);
       return;
     }
+
+    let ignore = false;
 
     // Verify session on mount via HTTP-only cookie
     api
