@@ -2,49 +2,7 @@ import { useState } from 'react';
 import Button from '../ui/Button';
 import Toggle from '../ui/Toggle';
 import TagBadge from '../ui/TagBadge';
-
-/**
- * Formats a 'YYYY-MM-DD' or ISO date string as 'Mon YYYY' (e.g. 'Jun 2024').
- * Returns an empty string for missing values or the raw value for unparseable input.
- */
-function formatDate(value) {
-  if (!value) return '';
-  if (typeof value !== 'string') return '';
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-
-  let date;
-  const match = trimmed.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?/);
-  if (match) {
-    const year = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10) - 1;
-    const day = match[3] ? parseInt(match[3], 10) : 1;
-    date = new Date(year, month, day);
-  } else {
-    date = new Date(trimmed);
-  }
-
-  if (isNaN(date.getTime())) {
-    return trimmed;
-  }
-
-  try {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return trimmed;
-  }
-}
-
-/**
- * Returns true only when value is a string starting with http:// or https:// (case-insensitive).
- */
-function isHttpUrl(value) {
-  if (typeof value !== 'string') return false;
-  return /^https?:\/\//i.test(value.trim());
-}
+import { isHttpUrl, formatDate } from '../../utils/format';
 
 const statusStyles = {
   open: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -127,17 +85,13 @@ export default function ItemCard({
   let dateLine = '';
   if (type === 'experience') {
     const start = formatDate(item.startDate);
-    const isPresent = Boolean(item.isCurrent || !item.endDate);
-    const end = isPresent ? 'Present' : formatDate(item.endDate);
-
-    if (start && end) {
-      dateLine = `${start} – ${end}`;
+    if (item.isCurrent) {
+      dateLine = start ? `${start} – Present` : 'Present';
+    } else if (item.endDate) {
+      const end = formatDate(item.endDate);
+      dateLine = start && end ? `${start} – ${end}` : (start || end);
     } else if (start) {
       dateLine = start;
-    } else if (end && !isPresent) {
-      dateLine = end;
-    } else if (isPresent && item.isCurrent) {
-      dateLine = 'Present';
     }
   }
 

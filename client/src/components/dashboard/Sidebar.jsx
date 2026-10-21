@@ -23,8 +23,8 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-full md:w-64 md:shrink-0 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between">
-      <div>
+    <aside className="w-full md:w-64 md:shrink-0 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between md:sticky md:top-0 md:h-screen md:self-start">
+      <div className="md:overflow-y-auto">
         <div className="p-4 md:px-6 md:py-5 border-b md:border-b-0 border-slate-100">
           <span className="text-xl font-bold tracking-tight text-slate-900">
             Career Tracker
@@ -51,7 +51,7 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-slate-200 p-4 mt-auto">
+      <div className="border-t border-slate-200 p-4 mt-auto md:shrink-0">
         <div className="mb-2">
           <p className="text-sm font-semibold text-slate-800 truncate">
             {user?.name || 'Developer'}

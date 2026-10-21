@@ -48,17 +48,13 @@ export default function ExperienceSection({ items = [] }) {
 
           let dateLine = '';
           const start = formatDate(exp?.startDate);
-          const isPresent = Boolean(exp?.isCurrent || !exp?.endDate);
-          const end = isPresent ? 'Present' : formatDate(exp?.endDate);
-
-          if (start && end) {
-            dateLine = `${start} – ${end}`;
+          if (exp?.isCurrent) {
+            dateLine = start ? `${start} – Present` : 'Present';
+          } else if (exp?.endDate) {
+            const end = formatDate(exp?.endDate);
+            dateLine = start && end ? `${start} – ${end}` : (start || end);
           } else if (start) {
             dateLine = start;
-          } else if (end && !isPresent) {
-            dateLine = end;
-          } else if (isPresent && exp?.isCurrent) {
-            dateLine = 'Present';
           }
 
           return (
