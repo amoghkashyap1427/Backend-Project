@@ -29,7 +29,9 @@ export default function PublicPortfolio() {
       Promise.resolve().then(() => {
         if (!ignore) {
           const mockUsername = (
-            mockPublicProfile.user?.username || ''
+            mockPublicProfile.profile?.username ||
+            mockPublicProfile.user?.username ||
+            ''
           ).toLowerCase();
           if (name === mockUsername) {
             setResult({ name, status: 'ok', data: mockPublicProfile });
@@ -68,9 +70,10 @@ export default function PublicPortfolio() {
 
   // Document title updater
   useEffect(() => {
-    if (result?.status === 'ok' && result?.data?.user?.name) {
+    const profile = result?.data?.profile || result?.data?.user;
+    if (result?.status === 'ok' && profile?.name) {
       const prevTitle = document.title;
-      document.title = `${result.data.user.name} | Career Tracker`;
+      document.title = `${profile.name} | Career Tracker`;
       return () => {
         document.title = prevTitle;
       };
@@ -129,6 +132,7 @@ export default function PublicPortfolio() {
   }
 
   const data = result?.data || {};
+  const profile = data.profile || data.user || {};
   const experience = Array.isArray(data?.experience) ? data.experience : [];
   const projects = Array.isArray(data?.projects) ? data.projects : [];
   const openSource = Array.isArray(data?.openSource) ? data.openSource : [];
@@ -151,14 +155,14 @@ export default function PublicPortfolio() {
         {/* Profile Header */}
         <header className="border-b border-slate-200 pb-8 space-y-3">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            {data.user?.name}
+            {profile.name}
           </h1>
           <p className="text-lg font-medium text-indigo-600">
-            @{data.user?.username || name}
+            @{profile.username || name}
           </p>
-          {data.user?.bio && (
+          {profile.bio && (
             <p className="text-slate-600 text-base max-w-2xl leading-relaxed whitespace-pre-line">
-              {data.user.bio}
+              {profile.bio}
             </p>
           )}
         </header>

@@ -254,6 +254,11 @@ export const mockSkills = [
 ];
 
 export const mockPublicProfile = {
+  profile: {
+    name: mockUser.name,
+    username: mockUser.username,
+    bio: mockUser.bio,
+  },
   user: {
     name: mockUser.name,
     username: mockUser.username,
