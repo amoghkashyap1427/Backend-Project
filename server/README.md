@@ -63,18 +63,33 @@ Configure each variable in `.env`:
 
 ---
 
-## Deployment (Render / Railway)
+## Deployment (Render)
 
-When deploying to cloud platforms like Render or Railway:
+When deploying the backend web service to Render:
 
-1. **Environment Variables:** Set all variables defined in `.env.example` in the hosting platform's dashboard:
-   - Set `NODE_ENV=production`. This disables development DNS workarounds, hides 500 error stack traces/details, and enables production cookie security.
-   - Set `CLIENT_URL` to your live frontend URL (e.g., `https://my-portfolio.vercel.app`) without trailing slashes.
-   - Set `MONGO_URI`, `JWT_SECRET`, and `JWT_EXPIRES_IN`.
-2. **Reverse Proxy & Cookies:**
-   - The application configures `app.set("trust proxy", 1)` so reverse proxies (like Render/Railway routing layers) correctly pass `X-Forwarded-*` headers.
-   - In production (`NODE_ENV === "production"`), authentication cookies are automatically issued with `secure: true` and `sameSite: "none"` to allow credentials to be sent cross-domain from the frontend to the backend.
-3. **Security & Rate Limiting:**
-   - Security headers are enabled via `helmet`.
-   - CORS is restricted to `CLIENT_URL` allowing only `GET`, `POST`, `PATCH`, `DELETE` methods and the `Content-Type` header.
-   - Auth endpoints (`/api/auth/register` and `/api/auth/login`) are protected with rate limiting (10 requests per 15 minutes per IP).
+1. **Service Configuration:**
+   - **Root Directory:** `server`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+   - **Runtime:** Node (Node `>=18` defined in `package.json` engines)
+
+2. **Environment Variables:** Set the following variables in the Render dashboard (names only, values configured per environment):
+   - `PORT`
+   - `MONGO_URI`
+   - `CLIENT_URL`
+   - `JWT_SECRET`
+   - `JWT_EXPIRES_IN`
+   - `NODE_ENV` (set to `production`)
+
+3. **MongoDB Atlas Network Access:**
+   - In MongoDB Atlas under **Network Access**, ensure `0.0.0.0/0` (allow access from anywhere) is added to the IP Access List so dynamic Render IPs can connect to the database.
+
+4. **CLIENT_URL Configuration Rule:**
+   - `CLIENT_URL` must match your deployed Vercel frontend origin exactly: must begin with `https://` and have **no trailing slash** (e.g., `https://your-portfolio.vercel.app`).
+   - The server strips trailing slashes on startup as a safeguard, but matching the exact origin ensures CORS preflight and cookie credentials succeed.
+
+5. **Cookies & Reverse Proxy:**
+   - The application configures `app.set("trust proxy", 1)` so Render's reverse proxy correctly forwards `X-Forwarded-*` headers.
+   - In production (`NODE_ENV=production`), authentication cookies are issued with `httpOnly: true`, `secure: true`, and `sameSite: "none"` to allow cross-origin credentials between the Vercel frontend and Render backend.
+   - Error messages are sanitized and internal stack traces are hidden in production.
+
