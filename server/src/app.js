@@ -17,10 +17,14 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+const clientOrigin = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.replace(/\/+$/, "")
+  : process.env.CLIENT_URL;
+
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: clientOrigin,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type"],
