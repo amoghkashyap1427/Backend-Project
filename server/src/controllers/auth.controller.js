@@ -26,7 +26,8 @@ const register = async (req, res) => {
     typeof name !== "string" ||
     typeof username !== "string" ||
     typeof email !== "string" ||
-    typeof password !== "string"
+    typeof password !== "string" ||
+    (bio !== undefined && typeof bio !== "string")
   ) {
     return res.status(400).json({ message: "Invalid input" });
   }
